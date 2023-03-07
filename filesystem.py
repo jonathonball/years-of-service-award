@@ -1,5 +1,18 @@
 import os
 
+extensions = ('.png', '.jpg', '.jpeg')
+
+def memoize(func):
+  cache = {}
+
+  def wrapper():
+    if () not in cache:
+      cache[()] = func()
+    return cache[()]
+
+  return wrapper
+
+@memoize
 def get_app_dirs():
   work_dir = os.environ.get('YOSA_WORK_DIR')
   if not work_dir or not os.path.isdir(work_dir):
@@ -9,3 +22,11 @@ def get_app_dirs():
     'work': work_dir,
     'input': input_dir
   }
+
+def get_image_full_path(image_file):
+  dirs = get_app_dirs()
+  return os.path.join(dirs['input'], image_file)
+
+def get_image_files():
+  dirs = get_app_dirs()
+  return [ f for f in os.listdir(dirs['input']) if f.lower().endswith(extensions) ]
