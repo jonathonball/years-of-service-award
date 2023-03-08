@@ -14,3 +14,4 @@ for image_file in image_files:
     cache_data = cache.create_file_data(image_file, image_path)
     cache.set_file_data(cache_conn, image_hash, cache_data)
     print(f'Picked up {str(image_hash)} ({str(image_file)})')
+    cache.add_to_queue('rotate', image_hash)

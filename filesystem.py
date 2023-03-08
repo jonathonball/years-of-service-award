@@ -35,4 +35,5 @@ def get_image_full_path(image_file):
 
 def get_image_files():
   dirs = get_app_dirs()
-  return [ f for f in os.listdir(dirs['input']) if f.lower().endswith(extensions) ]
+  filelist = os.listdir(dirs['input'])
+  return [ f for f in filelist if f.lower().endswith(extensions) ]

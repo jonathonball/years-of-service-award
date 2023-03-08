@@ -30,3 +30,18 @@ def create_file_data(name, path):
     'path': path,
     'processed': 0
   }
+
+def add_to_queue(cache, queue, data):
+  try:
+    cache.rpush(queue, data)
+  except Exception as e:
+    print(f'Cannot add item to {queue}: {data}')
+    sys.exit(1)
+
+def get_next_queue_item(cache, queue):
+  try:
+    item = cache.rpop(queue)
+  except Exception as e:
+    print(f'Cannot retrieve queue item from {queue}')
+    sys.exit(1)
+  return item
