@@ -1,16 +1,7 @@
 import os
+from memoize import memoize
 
 extensions = ('.png', '.jpg', '.jpeg')
-
-def memoize(func):
-  cache = {}
-
-  def wrapper():
-    if () not in cache:
-      cache[()] = func()
-    return cache[()]
-
-  return wrapper
 
 @memoize
 def get_app_dirs():
