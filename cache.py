@@ -40,7 +40,7 @@ def add_to_queue(cache, queue, data):
 
 def get_next_queue_item(cache, queue):
   try:
-    item = cache.rpop(queue)
+    item = cache.lpop(queue)
   except Exception as e:
     print(f'Cannot retrieve queue item from {queue}')
     sys.exit(1)
