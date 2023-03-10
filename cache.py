@@ -1,7 +1,7 @@
 import redis
 import sys
 
-queue_names = [ 'rotate', 'resize', 'crop', 'overlay', 'output' ]
+queue_names = [ 'convert', 'rotate', 'resize', 'crop', 'overlay', 'output' ]
 
 def init_cache():
   try:
