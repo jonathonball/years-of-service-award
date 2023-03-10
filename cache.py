@@ -1,6 +1,8 @@
 import redis
 import sys
 
+queue_names = [ 'rotate', 'resize', 'crop', 'overlay', 'output' ]
+
 def init_cache():
   try:
     cache = redis.Redis(host='localhost', port='6379', decode_responses=True)
@@ -45,3 +47,20 @@ def get_next_queue_item(cache, queue):
     print(f'Cannot retrieve queue item from {queue}')
     sys.exit(1)
   return item
+
+def get_first_queue_name():
+  return queue_names[0]
+
+def get_next_queue_name(current_name):
+  try:
+    index = queue_names.index(current_name)
+    index += 1
+    try:
+      queue_name = queue_names[index]
+    except IndexError as e:
+      print(f'Queue name error: {str(e)}')
+      sys.exit(1)
+  except ValueError as e:
+    print(f'Queue name error: {str(e)}')
+    sys.exit(1)
+  return queue_name
