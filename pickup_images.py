@@ -1,22 +1,25 @@
-import filesystem
-import hash
-import cache
+"""
+Pickup images for processing by this application
+"""
 import time
+import filesystem
+import checksum
+import cache
 
 dirs       = filesystem.get_app_dirs()
 cache_conn = cache.init_cache()
 
 while True:
-  image_files = filesystem.get_image_files()
-  for image_file in image_files:
-    image_path = filesystem.get_image_full_path(image_file)
-    image_hash = hash.calculate_file_md5(image_path)
-    cache_data = cache.get_file_data(cache_conn, image_hash)
-    if not cache_data:
-      cache_data = cache.create_file_data(image_file, image_path)
-      cache.set_file_data(cache_conn, image_hash, cache_data)
-      print(f'Picked up {str(image_hash)} ({str(image_file)})')
-      queue_name = cache.get_first_queue_name()
-      cache.add_to_queue(cache_conn, queue_name, image_hash)
-      print(f'Image {image_hash} added to "{queue_name}" queue')
-  time.sleep(1)
+    image_files = filesystem.get_image_files()
+    for image_file in image_files:
+        image_path = filesystem.get_image_input_path(image_file)
+        IMAGE_HASH = checksum.calculate_file_md5(image_path)
+        cache_data = cache.get_file_data(cache_conn, IMAGE_HASH)
+        if not cache_data:
+            cache_data = cache.create_file_data(image_file, image_path)
+            cache.set_file_data(cache_conn, IMAGE_HASH, cache_data)
+            print(f'Picked up {str(IMAGE_HASH)} ({str(image_file)})')
+            QUEUE_NAME = cache.get_first_queue_name()
+            cache.add_to_queue(cache_conn, QUEUE_NAME, IMAGE_HASH)
+            print(f'Image {IMAGE_HASH} added to "{QUEUE_NAME}" queue')
+    time.sleep(1)
