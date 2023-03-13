@@ -1,7 +1,12 @@
-import redis
+"""
+Interacts with a redis cache
+"""
 import sys
+import redis
+from redis.exceptions import RedisError
 
-FALSE = 0
+FALSE, FIRST = [0, 0]
+REDIS_ERROR_RETURN_CODE = 1
 
 queue_names = [
   'inspect',
@@ -13,66 +18,101 @@ queue_names = [
   'output'
 ]
 
-def init_cache():
-  try:
-    cache = redis.Redis(host='localhost', port='6379', decode_responses=True)
-  except Exception as e:
-    print(f'Cannot open connection to redis cache: "{str(e)}"')
-    sys.exit(1)
-  return cache
+def handle_redis_exceptions(func):
+    """
+    Error handling for a Redis() conneciton
+    """
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except RedisError as exception:
+            print(f"Error: {str(exception)}.")
+            print("Advice: " + get_advice_for_exception(exception))
+            sys.exit(REDIS_ERROR_RETURN_CODE)
+    return wrapper
 
-def get_file_data(cache, hash):
-  try:
-    data = cache.hgetall(hash)
-  except Exception as e:
-    print(f'Unable to query cache: "{str(e)}"')
-    sys.exit(1)
-  return data
-
-def set_file_data(cache, hash, data):
-  try:
-    cache.hmset(hash, data)
-  except Exception as e:
-    print(f'Unable to set cache item: "{str(e)}"')
-    sys.exit(1)
+def get_advice_for_exception(exception: RedisError):
+    """
+    Generate string with troubleshooting advice.
+    """
+    if isinstance(exception, redis.exceptions.ConnectionError):
+        return "Check the Redis server is running and accessible."
+    if isinstance(exception, redis.exceptions.AuthenticationError):
+        return "Check the Redis server password and authentication settings."
+    if isinstance(exception, redis.exceptions.TimeoutError):
+        return "Check if there is a firewall between this app and the Redis server or increase timeouts."
+    if isinstance(exception, redis.exceptions.WatchError):
+        return "Retry the transaction after handling the WatchError."
+    return "Refer to the Redis documentation or seek support from Redis community for help."
 
 def create_file_data(name, path):
-  file_data = {
-    'name': name,
-    'path': path
-  }
-  for queue_name in queue_names:
-    file_data[queue_name] = FALSE
-  return file_data
+    """
+    Generate a dict containing meta data about a filesystem file
+    """
+    file_data = {
+      'name': name,
+      'path': path
+    }
+    for queue_name in queue_names:
+        file_data[queue_name] = FALSE
+    return file_data
 
+@handle_redis_exceptions
+def init_cache():
+    """
+    Initializes a connection to a Redis cache
+    """
+    cache = redis.Redis(host='localhost', port='6379', decode_responses=True)
+    return cache
+
+@handle_redis_exceptions
+def get_file_data(cache, key):
+    """
+    Retrieve meta data about a filesystem file using a hash key
+    """
+    data = cache.hgetall(key)
+    return data
+
+@handle_redis_exceptions
+def set_file_data(cache, key, data):
+    """
+    Store meta data about a filesystem file using a hash key
+    """
+    cache.hmset(key, data)
+
+@handle_redis_exceptions
 def add_to_queue(cache, queue, data):
-  try:
-    cache.rpush(queue, data)
-  except Exception as e:
-    print(f'Cannot add item to {queue}: {data}')
-    sys.exit(1)
+    """
+    Push a data item into a Redis FIFO queue
+    """
+    cache.lpush(queue, data)
 
 def get_next_queue_item(cache, queue):
-  try:
-    item = cache.lpop(queue)
-  except Exception as e:
-    print(f'Cannot retrieve queue item from {queue}')
-    sys.exit(1)
-  return item
+    """
+    Get the next data item from a Redis FIFO queue
+    """
+    item = cache.rpop(queue)
+    return item
 
 def get_first_queue_name():
-  return queue_names[0]
+    """
+    Get the name of the initial redis queue
+    """
+    return queue_names[FIRST]
 
 def get_next_queue_name(current_name):
-  try:
-    index = queue_names.index(current_name)
-    index += 1
+    """
+    Get the next queue name based on the current
+    """
     try:
-      queue_name = queue_names[index]
-    except IndexError as e:
-      print(f'Queue name error: {str(e)}')
-      sys.exit(1)
-  except ValueError as e:
-    print(f'Queue name error: {str(e)}')
-    sys.exit(1)
-  return queue_name
+        index = queue_names.index(current_name)
+        index += 1
+        try:
+            queue_name = queue_names[index]
+        except IndexError as exception:
+            print(f'Queue name error: {str(exception)}')
+            sys.exit(REDIS_ERROR_RETURN_CODE)
+    except ValueError as exception:
+        print(f'Queue name error: {str(exception)}')
+        sys.exit(REDIS_ERROR_RETURN_CODE)
+    return queue_name
