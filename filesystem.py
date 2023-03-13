@@ -24,11 +24,9 @@ def get_dir_path(dir_name):
 def get_app_dirs():
   input_dir  = get_dir_path('input')
   output_dir = get_dir_path('output')
-  tmp_dir    = get_dir_path('tmp')
   return {
     'input':  input_dir,
     'output': output_dir,
-    'tmp':    tmp_dir,
   }
 
 # change this method to indicate it's for input only or refactor

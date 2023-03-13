@@ -1,7 +1,17 @@
 import redis
 import sys
 
-queue_names = [ 'convert', 'rotate', 'resize', 'crop', 'overlay', 'output' ]
+FALSE = 0
+
+queue_names = [
+  'inspect',
+  'convert',
+  'rotate',
+  'resize',
+  'crop',
+  'overlay',
+  'output'
+]
 
 def init_cache():
   try:
@@ -27,11 +37,13 @@ def set_file_data(cache, hash, data):
     sys.exit(1)
 
 def create_file_data(name, path):
-  return {
+  file_data = {
     'name': name,
-    'path': path,
-    'processed': 0
+    'path': path
   }
+  for queue_name in queue_names:
+    file_data[queue_name] = FALSE
+  return file_data
 
 def add_to_queue(cache, queue, data):
   try:
