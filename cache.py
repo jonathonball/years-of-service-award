@@ -87,6 +87,7 @@ def add_to_queue(cache, queue, data):
     """
     cache.lpush(queue, data)
 
+@handle_redis_exceptions
 def get_next_queue_item(cache, queue):
     """
     Get the next data item from a Redis FIFO queue
