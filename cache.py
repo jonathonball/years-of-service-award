@@ -9,13 +9,13 @@ FALSE, FIRST = [0, 0]
 REDIS_ERROR_RETURN_CODE = 1
 
 queue_names = [
-  'inspect',
-  'convert',
-  'rotate',
-  'resize',
-  'crop',
-  'overlay',
-  'output'
+    'inspect',
+    'convert',
+    'rotate',
+    'resize',
+    'crop',
+    'overlay',
+    'output'
 ]
 
 def handle_redis_exceptions(func):
