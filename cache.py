@@ -27,7 +27,8 @@ def handle_redis_exceptions(func):
             return func(*args, **kwargs)
         except RedisError as exception:
             print(f"Error: {str(exception)}.")
-            print("Advice: " + get_advice_for_exception(exception))
+            advice = get_advice_for_exception(exception)
+            print(f"Advice: {advice}")
             sys.exit(REDIS_ERROR_RETURN_CODE)
     return wrapper
 
