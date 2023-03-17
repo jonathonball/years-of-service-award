@@ -1,18 +1,27 @@
 #!/usr/bin/env python3
-import redis
+"""
+Utility to reset a Redis cache
+"""
 import argparse
-
-r = redis.Redis(host='localhost', port=6379, db=0)
+import cache
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--force', '--yes', '-y', '-f', action='store_true', help='skip confirmation prompt')
+parser.add_argument(
+    '--force',
+    '--yes',
+    '-f',
+    '-y',
+    action='store_true',
+    help='skip confirmation prompt'
+)
 args = parser.parse_args()
 
 if not args.force:
-  confirmation = input("Are you sure you want to delete all data in the Redis cache? (Yes/No)")
+    confirmation = input("Are you sure you want to delete all data in the Redis cache? (Yes/No)")
 
 if args.force or confirmation.lower() in ['yes', 'y']:
-  r.flushall()
-  print("All data in the Redis cache has been deleted.")
+    cache_conn = cache.init_cache()
+    cache_conn.flushall(cache_conn)
+    print("All data in the Redis cache has been deleted.")
 else:
-  print("Data deletion aborted.")
+    print("Data deletion aborted.")

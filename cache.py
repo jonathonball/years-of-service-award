@@ -95,6 +95,13 @@ def get_next_queue_item(cache, queue):
     item = cache.rpop(queue)
     return item
 
+@handle_redis_exceptions
+def flushall(cache):
+    """
+    Call flushall on a Redis cache
+    """
+    cache.flushall()
+
 def get_first_queue_name():
     """
     Get the name of the initial redis queue
