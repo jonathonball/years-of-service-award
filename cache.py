@@ -15,7 +15,7 @@ queue_names = [
     'resize',
     'crop',
     'overlay',
-    'output'
+    'output',
 ]
 
 def handle_redis_exceptions(func):
@@ -41,7 +41,7 @@ def get_advice_for_exception(exception: RedisError):
     if isinstance(exception, redis.exceptions.AuthenticationError):
         return "Check the Redis server password and authentication settings."
     if isinstance(exception, redis.exceptions.TimeoutError):
-        return "Check if there is a firewall between this app and the Redis server or increase timeouts."
+        return "Check if Redis server under load or increase timeouts."
     if isinstance(exception, redis.exceptions.WatchError):
         return "Retry the transaction after handling the WatchError."
     return "Refer to the Redis documentation or seek support from Redis community for help."
@@ -52,7 +52,7 @@ def create_file_data(name, path):
     """
     file_data = {
       'name': name,
-      'path': path
+      'path': path,
     }
     for queue_name in queue_names:
         file_data[queue_name] = FALSE
