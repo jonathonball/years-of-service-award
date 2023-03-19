@@ -3,17 +3,20 @@ Interacts with the local filesystem
 """
 import os
 from memoize import memoize
+import errors
 
 EXTENSIONS = ('.png', '.jpg', '.jpeg')
 ENV_PREFIX = 'YOSA'
 ENV_SUFFIX = 'DIR'
 
+@errors.handle_file_exceptions
 def validate_dir(path):
     """
     Validate path is a dir
     """
     return path and os.path.isdir(path)
 
+@errors.handle_file_exceptions
 def get_dir_path(dir_name):
     """
     Resolve the path of a directory
@@ -41,7 +44,6 @@ def get_app_dirs():
         'output': output_dir,
     }
 
-# change this method to indicate it's for input only or refactor
 def get_image_input_path(image_file):
     """
     Get path for input image
@@ -56,3 +58,13 @@ def get_image_files():
     dirs     = get_app_dirs()
     filelist = os.listdir(dirs['input'])
     return [ f for f in filelist if f.lower().endswith(EXTENSIONS) ]
+
+def get_image_data():
+    """
+    Reads an image from file into memory
+    """
+
+def remove_file():
+    """
+    Remove a file from the filesystem
+    """
