@@ -16,7 +16,8 @@ while True:
         IMAGE_HASH = checksum.calculate_file_md5(image_path)
         cache_data = cache.get_file_data(cache_conn, IMAGE_HASH)
         if not cache_data:
-            cache_data = cache.create_file_data(image_file, image_path)
+            file_data = filesystem.get_file_contents(image_path)
+            cache_data = cache.create_file_data(image_file, file_data)
             cache.set_file_data(cache_conn, IMAGE_HASH, cache_data)
             print(f'Picked up {str(IMAGE_HASH)} ({str(image_file)})')
             QUEUE_NAME = cache.get_first_queue_name()
