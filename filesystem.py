@@ -5,7 +5,7 @@ import os
 from memoize import memoize
 import errors
 
-EXTENSIONS = ('.png', '.jpg', '.jpeg')
+FILE_EXTENSIONS = ('.png', '.jpg', '.jpeg')
 ENV_PREFIX = 'YOSA'
 ENV_SUFFIX = 'DIR'
 
@@ -51,20 +51,26 @@ def get_image_input_path(image_file):
     dirs = get_app_dirs()
     return os.path.join(dirs['input'], image_file)
 
+@errors.handle_file_exceptions
 def get_image_files():
     """
     Get a list of images in a directory by file extension
     """
     dirs     = get_app_dirs()
     filelist = os.listdir(dirs['input'])
-    return [ f for f in filelist if f.lower().endswith(EXTENSIONS) ]
+    return [ f for f in filelist if f.lower().endswith(FILE_EXTENSIONS) ]
 
-def get_image_data():
+@errors.handle_file_exceptions
+def get_file_contents(file_path):
     """
-    Reads an image from file into memory
+    Reads a file into memory
     """
+    data = None
+    with open(file_path, 'rb') as file_handle:
+        data = file_handle.read()
+    return data
 
-def remove_file():
-    """
-    Remove a file from the filesystem
-    """
+# def remove_file():
+#     """
+#     Remove a file from the filesystem
+#     """
