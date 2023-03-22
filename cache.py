@@ -17,16 +17,17 @@ queue_names = [
 ]
 
 @errors.handle_redis_exceptions
-def create_file_data(name, path):
+def create_file_data(name, data):
     """
     Generate a dict containing meta data about a filesystem file
     """
     file_data = {
       'name': name,
-      'path': path,
+      'data': data,
     }
     for queue_name in queue_names:
         file_data[queue_name] = FALSE
+    file_data['error'] = FALSE
     return file_data
 
 @errors.handle_redis_exceptions
