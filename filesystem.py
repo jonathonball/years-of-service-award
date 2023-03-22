@@ -70,7 +70,9 @@ def get_file_contents(file_path):
         data = file_handle.read()
     return data
 
-# def remove_file():
-#     """
-#     Remove a file from the filesystem
-#     """
+@errors.handle_file_exceptions
+def remove_file(file_path):
+    """
+    Remove a file from the filesystem
+    """
+    os.remove(file_path)

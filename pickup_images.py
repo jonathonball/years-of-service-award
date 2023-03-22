@@ -23,4 +23,6 @@ while True:
             QUEUE_NAME = cache.get_first_queue_name()
             cache.add_to_queue(cache_conn, QUEUE_NAME, IMAGE_HASH)
             print(f'Image {IMAGE_HASH} added to "{QUEUE_NAME}" queue')
+            filesystem.remove_file(image_path)
+            print(f'Image file removed: {image_path}')
     time.sleep(1)
