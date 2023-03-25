@@ -4,6 +4,7 @@ Interacts with the local filesystem
 import os
 from memoize import memoize
 import errors
+import chardet
 
 FILE_EXTENSIONS = ('.png', '.jpg', '.jpeg')
 ENV_PREFIX = 'YOSA'
@@ -44,15 +45,15 @@ def get_app_dirs():
         'output': output_dir,
     }
 
-def get_image_input_path(image_file):
+def get_file_input_path(file):
     """
     Get path for input image
     """
     dirs = get_app_dirs()
-    return os.path.join(dirs['input'], image_file)
+    return os.path.join(dirs['input'], file)
 
 @errors.handle_file_exceptions
-def get_image_files():
+def get_image_file_list():
     """
     Get a list of images in a directory by file extension
     """
@@ -76,3 +77,10 @@ def remove_file(file_path):
     Remove a file from the filesystem
     """
     os.remove(file_path)
+
+def get_file_encoding(image_data):
+    """
+    Gets the encoding of a file
+    """
+    encoding = chardet.detect(image_data)['encoding']
+    return encoding
