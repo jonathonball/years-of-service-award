@@ -1,16 +1,25 @@
 """
 Functions for working with images
 """
+import io
 from PIL import Image, ExifTags
 from memoize import memoize
 import errors
 
 @errors.handle_pillow_exception
-def open_image(file_path):
+def load_image(image_data):
     """
-    Open an image file
+    Load image from variable
     """
-    image = Image.open(file_path)
+    image = Image.open(io.BytesIO(image_data))
+    return image
+
+@errors.handle_pillow_exception
+def load_image_from_file(image_path):
+    """
+    Load an image from a file
+    """
+    image = Image.open(image_path)
     return image
 
 @memoize
