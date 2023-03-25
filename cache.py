@@ -3,6 +3,7 @@ Interacts with a redis cache
 """
 import redis
 import errors
+import json
 
 FALSE, FIRST = [0, 0]
 
@@ -17,17 +18,17 @@ queue_names = [
 ]
 
 @errors.handle_redis_exceptions
-def create_file_data(name, data):
+def create_file_metadata(name, file_hash):
     """
     Generate a dict containing meta data about a filesystem file
     """
-    file_data = {
-      'name': name,
-      'data': data,
-    }
+    file_data = {}
+    file_data['name'] = name
+    file_data['hash'] = file_hash
     for queue_name in queue_names:
         file_data[queue_name] = FALSE
     file_data['error'] = FALSE
+    file_data['error_reason'] = ''
     return file_data
 
 @errors.handle_redis_exceptions
@@ -76,17 +77,12 @@ def flushall(cache):
     cache.flushall()
 
 @errors.handle_queue_exceptions
-def get_first_queue_name():
-    """
-    Get the name of the initial redis queue
-    """
-    return queue_names[FIRST]
-
-@errors.handle_queue_exceptions
-def get_next_queue_name(current_name):
+def get_next_queue_name(current_name = None):
     """
     Get the next queue name based on the current
     """
+    if not current_name:
+        return queue_names[FIRST]
     index = queue_names.index(current_name)
     index += 1
     queue_name = queue_names[index]
