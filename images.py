@@ -10,6 +10,15 @@ import errors
 def load_image(image_data):
     """
     Load image from variable
+
+    Parameters
+    ----------
+    image_data : bytes
+        Raw image data
+
+    Returns
+    -------
+    image : Image
     """
     image = Image.open(io.BytesIO(image_data))
     return image
@@ -18,6 +27,14 @@ def load_image(image_data):
 def load_image_from_file(image_path):
     """
     Load an image from a file
+
+    Parameters
+    ----------
+    image_path : path
+
+    Returns
+    -------
+    image : Image
     """
     image = Image.open(image_path)
     return image
@@ -26,6 +43,10 @@ def load_image_from_file(image_path):
 def get_orientation_exif_key():
     """
     Determine the key related to exif orientation
+
+    Returns
+    -------
+    orientation_key : int
     """
     orientation_key = None
     for orientation_key in ExifTags.TAGS.keys():
@@ -39,6 +60,14 @@ def get_orientation_exif_key():
 def get_orientation_correction(image):
     """
     Determine how many degrees an image must be rotated
+
+    Parameters
+    ----------
+    image : Image
+
+    Returns
+    -------
+    correction_degress : int
     """
     orientation_key = get_orientation_exif_key()
     try:
