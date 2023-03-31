@@ -3,12 +3,25 @@ Interacts with a redis cache
 """
 import redis
 import errors
-import json
 
 FALSE, FIRST = [0, 0]
 
+# {
+#     'name': 'IMG_20210805_074634.jpg',
+#     'path': '/opt/years-of-service-award/input/IMG_20210805_074634.jpg',
+#     'hash': '1aa53ef6c16c9faf580383fed4e2ce81',
+#     'inspect': '0',
+#     'convert': '0',
+#     'rotate': '0',
+#     'resize': '0',
+#     'crop': '0',
+#     'overlay': '0',
+#     'output': '0',
+#     'error': '0',
+# }
+
 queue_names = [
-    'inspect',
+    'triage',
     'convert',
     'rotate',
     'resize',
@@ -21,14 +34,25 @@ queue_names = [
 def create_file_metadata(name, file_hash):
     """
     Generate a dict containing meta data about a filesystem file
+
+    Parameters
+    ----------
+    name : str
+    file_hash : str
+
+    Returns
+    -------
+    file_data : dict
     """
-    file_data = {}
-    file_data['name'] = name
-    file_data['hash'] = file_hash
+    file_data = {
+        'name': name,
+        'hash': file_hash,
+        'error': FALSE,
+        'error_reason': '',
+        'state': 'Getting picked up',
+    }
     for queue_name in queue_names:
         file_data[queue_name] = FALSE
-    file_data['error'] = FALSE
-    file_data['error_reason'] = ''
     return file_data
 
 @errors.handle_redis_exceptions
