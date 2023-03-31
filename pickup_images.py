@@ -6,6 +6,7 @@ import filesystem
 import checksum
 import cache
 
+APPLICATION_SLEEP_INTERVAL = 1
 dirs       = filesystem.get_app_dirs()
 cache_conn = cache.init_cache()
 
@@ -22,4 +23,4 @@ while True:
             QUEUE_NAME = cache.get_next_queue_name()
             cache.add_to_queue(cache_conn, QUEUE_NAME, IMAGE_HASH)
             print(f'{IMAGE_HASH}: Added to "{QUEUE_NAME}" queue')
-    time.sleep(1)
+    time.sleep(APPLICATION_SLEEP_INTERVAL)
